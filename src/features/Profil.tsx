@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { href } from '../app/router'
 import { actions, useStore } from '../app/store'
 import { consultations, debates } from '../data/demo'
-import { Button, Card, CHOICE_LABEL, cx, Empty, Field, inputClass, Notice, PageHeader, Section } from '../ui/kit'
+import { AGES, FREQUENCIES, SITUATIONS, themeLabel } from '../domain/preferences'
+import { Button, Card, CHOICE_LABEL, cx, Empty, Field, inputClass, LinkButton, Notice, PageHeader, Section } from '../ui/kit'
 
 const THEMES = [
   { id: 'system', label: 'Automatique' },
@@ -13,6 +14,9 @@ const THEMES = [
 export function Profil() {
   const s = useStore()
   const [confirming, setConfirming] = useState(false)
+  const [erasingPrefs, setErasingPrefs] = useState(false)
+  const p = s.prefs
+  const answered = p.status === 'termine'
   const [showExport, setShowExport] = useState(false)
   const [copied, setCopied] = useState(false)
   const exported = JSON.stringify(s, null, 2)
@@ -36,6 +40,38 @@ export function Profil() {
         <Field id="pseudo" label="Nom affiché avec vos contributions" hint="Facultatif. Évitez votre vrai nom. 30 caractères au maximum.">
           <input id="pseudo" type="text" autoComplete="off" maxLength={30} value={s.pseudonym} onChange={(e) => actions.setPseudonym(e.target.value)} className={inputClass} placeholder="Vous (anonyme)" aria-describedby="pseudo-hint" />
         </Field>
+      </Section>
+
+      <Section id="pf-prefs" title="Mes préférences">
+        {answered ? (
+          <dl className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-surface">
+            {([
+              ['Thèmes suivis', p.themes.length ? p.themes.map(themeLabel).join(', ') : 'Aucun'],
+              ['Rythme de découverte', FREQUENCIES.find((f) => f.id === p.frequency)?.label ?? 'Non précisé'],
+              ['Situation', SITUATIONS.find((x) => x.id === p.situation)?.label ?? 'Non précisée'],
+              ['Tranche d’âge', AGES.find((x) => x.id === p.age)?.label ?? 'Non précisée'],
+            ] as const).map(([label, value]) => (
+              <div key={label} className="p-4"><dt className="text-sm text-ink3">{label}</dt><dd className="font-semibold text-ink">{value}</dd></div>
+            ))}
+          </dl>
+        ) : <Empty>Vous n'avez enregistré aucune préférence. AGORA vous présente toutes les consultations de la même façon.</Empty>}
+        <p className="text-sm text-ink3">
+          Ces réponses composent votre espace « Pour vous » à partir des thèmes choisis. Elles restent sur cet appareil, à part de vos votes, et vos votes ne servent jamais aux recommandations. AGORA n'envoie aucune notification.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <LinkButton tone="secondary" href={href('bienvenue')}>{answered ? 'Modifier mes préférences' : 'Répondre au questionnaire'}</LinkButton>
+          {answered && !erasingPrefs && <Button tone="danger" onClick={() => setErasingPrefs(true)}>Effacer mes préférences</Button>}
+        </div>
+        {erasingPrefs && (
+          <Card className="flex flex-col gap-3 border-alert shadow-none" role="alertdialog" aria-labelledby="erase-prefs-title">
+            <p id="erase-prefs-title" className="font-semibold text-ink">Effacer vos thèmes, votre rythme, votre situation et votre tranche d'âge ?</p>
+            <p className="text-sm text-ink2">Vos votes et vos contributions ne sont pas concernés.</p>
+            <div className="flex flex-wrap gap-2">
+              <Button tone="danger" onClick={() => { actions.erasePreferences(); setErasingPrefs(false) }}>Oui, effacer mes préférences</Button>
+              <Button tone="ghost" onClick={() => setErasingPrefs(false)}>Annuler</Button>
+            </div>
+          </Card>
+        )}
       </Section>
 
       <Section id="pf-theme" title="Affichage">
@@ -88,7 +124,7 @@ export function Profil() {
 
       <Section id="pf-data" title="Vos données">
         <Notice>
-          Ce prototype n'a ni serveur ni compte. Votre pseudonyme, vos votes et vos contributions sont enregistrés dans le stockage de ce navigateur et n'en sortent pas.
+          Ce prototype n'a ni serveur ni compte. Votre pseudonyme, vos préférences, vos votes et vos contributions sont enregistrés dans le stockage de ce navigateur et n'en sortent pas.
         </Notice>
         <div className="flex flex-wrap gap-2">
           <Button tone="secondary" onClick={() => setShowExport(!showExport)} aria-expanded={showExport}>{showExport ? 'Masquer mes données' : 'Voir et copier mes données'}</Button>
@@ -103,7 +139,7 @@ export function Profil() {
         )}
         {confirming && (
           <Card className="flex flex-col gap-3 border-alert shadow-none" role="alertdialog" aria-labelledby="erase-title">
-            <p id="erase-title" className="font-semibold text-ink">Effacer définitivement vos votes, arguments, propositions et préférences ?</p>
+            <p id="erase-title" className="font-semibold text-ink">Effacer définitivement vos votes, arguments, propositions, préférences et réglages ?</p>
             <p className="text-sm text-ink2">Cette action ne peut pas être annulée.</p>
             <div className="flex flex-wrap gap-2">
               <Button tone="danger" onClick={() => { actions.eraseAll(); setConfirming(false) }}>Oui, tout effacer</Button>

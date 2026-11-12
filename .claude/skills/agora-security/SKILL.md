@@ -13,6 +13,13 @@ description: Analyse de sécurité, de confidentialité (RGPD) et d'intégrité 
 5. Un secret approche-t-il du dépôt ou du frontend ?
 6. Une affirmation de l'interface promet-elle plus que ce que le système garantit (unicité du vote, représentativité, caractère officiel) ?
 
+## Personnalisation et opinions politiques
+- Les préférences (thèmes, rythme, situation, âge) vivent dans `agora.preferences.v1`, à part des votes. Ne jamais les fusionner, ni les exporter ensemble vers un tiers.
+- `recommend()` ne reçoit ni votes, ni soutiens, ni arguments. Toute évolution qui lui en donnerait l'accès est refusée : ce serait déduire une orientation politique.
+- Situation et âge ne servent pas aux recommandations. En version connectée : consentement distinct, statistiques agrégées seulement, seuils d'effectif minimum.
+- Moins de 15 ans : ni âge ni situation conservés (`sanitizePreferences`). Avant toute ouverture publique : avis juridique sur les mineurs.
+- Aucune notification n'existe : l'interface parle de « rythme », jamais d'envoi.
+
 ## État du prototype (à ne pas survendre)
 - Stockage local uniquement : pas d'authentification, pas d'unicité du vote, administration ouverte à tous.
 - Entrées bornées (`validateProposal`, `validateArgument`), liens filtrés (`safeUrl`), rendu échappé par React.

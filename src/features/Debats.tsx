@@ -6,9 +6,15 @@ import { debates } from '../data/demo'
 import { safeUrl, validateArgument } from '../domain/proposals'
 import type { Argument, Stance } from '../domain/types'
 import { EditorialImage } from '../ui/brand'
-import { ago, Badge, Button, Card, cx, DemoTag, Empty, Field, inputClass, NotFound, Notice, PageHeader, Section } from '../ui/kit'
+import { ago, Button, Card, cx, DemoTag, Empty, Field, inputClass, NotFound, Notice, PageHeader, Section } from '../ui/kit'
 
 const STANCE: Record<Stance, string> = { pour: 'Pour', contre: 'Contre', nuance: 'Nuance' }
+// Même gabarit pour les trois positions ; « Nuance » reste neutre.
+const STANCE_TONE: Record<Stance, { chip: string; on: string; dot: string }> = {
+  pour: { chip: 'bg-poursoft text-pourink', on: 'border-pour bg-poursoft text-pourink', dot: 'bg-pour' },
+  contre: { chip: 'bg-contresoft text-contreink', on: 'border-contre bg-contresoft text-contreink', dot: 'bg-contre' },
+  nuance: { chip: 'bg-blancsoft text-blancink', on: 'border-blancedge bg-blancsoft text-blancink', dot: 'bg-blanc ring-1 ring-inset ring-blancedge' },
+}
 const REASONS = ['Attaque personnelle ou injure', 'Information manifestement fausse', 'Hors sujet ou publicité', 'Autre']
 
 export function DebateList() {
@@ -70,8 +76,9 @@ function Composer({ debateId, parentId, onDone }: { debateId: string; parentId?:
         <legend className="mb-1.5 text-sm font-semibold text-ink">Votre position</legend>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(STANCE) as Stance[]).map((st) => (
-            <label key={st} htmlFor={`${fid}-${st}`} className={cx('flex min-h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-semibold', stance === st ? 'border-accent bg-soft text-accentink' : 'border-line text-ink2')}>
+            <label key={st} htmlFor={`${fid}-${st}`} className={cx('choice flex min-h-11 cursor-pointer items-center gap-2 rounded-full border-2 px-4 text-sm font-semibold', stance === st ? STANCE_TONE[st].on : 'border-line text-ink2')}>
               <input id={`${fid}-${st}`} type="radio" name={`${fid}-stance`} className="sr-only" checked={stance === st} onChange={() => setStance(st)} />
+              <span aria-hidden="true" className={cx('size-2.5 rounded-full', STANCE_TONE[st].dot)} />
               {STANCE[st]}
             </label>
           ))}
@@ -107,7 +114,7 @@ function ArgumentItem({ a, replies, depth = 0 }: { a: Argument; replies: Argumen
         <header className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           {depth > 0 && <CornerDownRight size={14} className="text-ink3" aria-hidden="true" />}
           <span className="font-semibold text-ink">{a.author}</span>
-          <Badge tone={a.stance === 'nuance' ? 'outline' : a.stance === 'pour' ? 'soft' : 'night'}>{STANCE[a.stance]}</Badge>
+          <span className={cx('inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold', STANCE_TONE[a.stance].chip)}><span aria-hidden="true" className={cx('size-2 rounded-full', STANCE_TONE[a.stance].dot)} />{STANCE[a.stance]}</span>
           <span className="text-ink3">{ago(a.createdAt)}</span>
         </header>
 
@@ -199,7 +206,7 @@ export function DebatePage({ id }: { id: string }) {
       <div className="flex flex-col gap-2.5">
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrer par position">
           {(['tous', 'pour', 'contre', 'nuance'] as const).map((st) => (
-            <button key={st} type="button" aria-pressed={stance === st} onClick={() => setStance(st)} className={chip(stance === st)}>{st === 'tous' ? 'Toutes les positions' : STANCE[st]}</button>
+            <button key={st} type="button" aria-pressed={stance === st} onClick={() => setStance(st)} className={st === 'tous' || stance !== st ? chip(stance === st) : cx('min-h-10 rounded-full border-2 px-3.5 text-sm font-semibold', STANCE_TONE[st].on)}>{st === 'tous' ? 'Toutes les positions' : STANCE[st]}</button>
           ))}
         </div>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Classer">

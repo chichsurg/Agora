@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { BookOpen, CircleUserRound, Home as HomeIcon, Lightbulb, Menu, MessagesSquare, PieChart, ScrollText, Search, ShieldCheck, Vote } from 'lucide-react'
-import { href, useRoute, type Route } from './router'
+import { href, navigate, useRoute, type Route } from './router'
 import { useStore } from './store'
 import { cx, NotFound, PageHeader } from '../ui/kit'
 import { BrandLogo, ReferenceIcon, type ReferenceIconName } from '../ui/brand'
@@ -14,6 +14,7 @@ import { Profil } from '../features/Profil'
 import { Admin } from '../features/Admin'
 import { Regles } from '../features/Regles'
 import { Recherche } from '../features/Recherche'
+import { Bienvenue } from '../features/Bienvenue'
 
 type Tab = 'accueil' | 'dossiers' | 'consultations' | 'debats' | 'plus'
 
@@ -84,6 +85,7 @@ function screen(r: Route): ReactNode {
     case 'regles': return <Regles />
     case 'plus': return <Plus />
     case 'recherche': return <Recherche />
+    case 'bienvenue': return <Bienvenue />
     default: return <NotFound />
   }
 }
@@ -97,10 +99,11 @@ function widthOf(r: Route): string {
 
 export function App() {
   const route = useRoute()
-  const { theme } = useStore()
+  const { theme, prefs } = useStore()
   const key = 'id' in route ? `${route.name}-${route.id}` : route.name
   const tab = tabOf(route)
   const home = route.name === 'accueil'
+  const bare = home || route.name === 'bienvenue' // écrans qui portent eux-mêmes le logo
   const first = useRef(true)
 
   // Préférence d'affichage : "système" laisse la main au téléphone (ou à l'hôte de l'aperçu).
@@ -115,6 +118,13 @@ export function App() {
       applied.current = true
     }
   }, [theme])
+
+  // Première visite : le questionnaire de bienvenue est proposé une fois, depuis l'accueil seulement.
+  // Il se quitte en un geste et n'interrompt jamais un lien direct vers une autre page.
+  useEffect(() => {
+    if (prefs.status === 'jamais-vu' && route.name === 'accueil') navigate(href('bienvenue'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // À chaque changement d'écran : retour en haut et focus sur le titre (lecteurs d'écran, clavier).
   useEffect(() => {
@@ -163,7 +173,7 @@ export function App() {
       </nav>
 
       {/* En-tête (mobile). À l'accueil, le hero porte lui-même le logo, comme sur REF-14. */}
-      {!home && (
+      {!bare && (
         <header className="gutter sticky z-30 flex h-14 items-center justify-between border-b border-line bg-bg/90 backdrop-blur lg:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
           <a href={href('accueil')} className="flex min-h-11 items-center" aria-label="AGORA, accueil">
             <BrandLogo variant="row" />
@@ -192,7 +202,8 @@ export function App() {
             return (
               <li key={t.id}>
                 <a href={t.to} aria-current={active ? 'page' : undefined}
-                  className={cx('flex min-h-[3.75rem] flex-col items-center justify-center gap-1 text-[0.72rem]', active ? 'font-bold text-accentink' : 'font-medium text-ink3')}>
+                  className={cx('press relative flex min-h-[3.75rem] flex-col items-center justify-center gap-1 text-[0.72rem]', active ? 'font-bold text-accentink' : 'font-medium text-ink3')}>
+                  {active && <span aria-hidden="true" className="absolute inset-x-5 top-0 h-[3px] rounded-b-full bg-accent" />}
                   <t.icon size={23} strokeWidth={1.9} fill={active && t.id === 'accueil' ? 'currentColor' : 'none'} aria-hidden="true" />
                   {t.label}
                 </a>

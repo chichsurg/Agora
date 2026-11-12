@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { demoArguments, demoProposals } from '../data/demo'
 import { emptyState, localAdapter, type Persisted, type StorageAdapter } from '../data/storage'
+import { emptyPreferences, sanitizePreferences, type Preferences } from '../domain/preferences'
 import { nextStatus, statusLabel, type ProposalDraft } from '../domain/proposals'
 import type { Argument, Choice, Proposal, Stance } from '../domain/types'
 
@@ -113,9 +114,15 @@ export const actions = {
     set({ proposalStatus: { ...state.proposalStatus, [p.id]: next }, journal: log('Proposition avancée', `« ${p.title} » → ${statusLabel(next)}`) })
   },
 
+  // Personnalisation : jamais croisée avec les votes.
+  savePreferences: (answers: Pick<Preferences, 'themes' | 'frequency' | 'situation' | 'age'>) =>
+    set({ prefs: sanitizePreferences({ ...answers, status: 'termine', updatedAt: now() }) }),
+  skipOnboarding: () => { if (state.prefs.status === 'jamais-vu') set({ prefs: { ...state.prefs, status: 'passe' } }) },
+  erasePreferences: () => set({ prefs: emptyPreferences('passe') }),
+
   eraseAll: () => {
     adapter.clear()
-    state = emptyState()
+    state = { ...emptyState(), prefs: emptyPreferences('passe') }
     listeners.forEach((l) => l())
   },
 }
