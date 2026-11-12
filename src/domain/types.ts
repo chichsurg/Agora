@@ -25,6 +25,8 @@ export type EditorialStatus = 'brouillon-ia' | 'valide'
 
 export interface Dossier {
   id: string
+  /** Identifiant d'une photo de data/media.ts. Illustration seulement. */
+  photo: 'invalides' | 'assemblee' | 'luxembourg' | 'soufflot'
   title: string
   theme: string
   summary: string
@@ -80,6 +82,7 @@ export interface Argument {
 
 export interface Debate {
   id: string
+  photo: Dossier['photo']
   title: string
   prompt: string
   dossierId?: string

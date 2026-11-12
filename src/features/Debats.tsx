@@ -5,6 +5,7 @@ import { actions, allArguments, useStore } from '../app/store'
 import { debates } from '../data/demo'
 import { safeUrl, validateArgument } from '../domain/proposals'
 import type { Argument, Stance } from '../domain/types'
+import { EditorialImage } from '../ui/brand'
 import { ago, Badge, Button, Card, cx, DemoTag, Empty, Field, inputClass, NotFound, Notice, PageHeader, Section } from '../ui/kit'
 
 const STANCE: Record<Stance, string> = { pour: 'Pour', contre: 'Contre', nuance: 'Nuance' }
@@ -18,16 +19,19 @@ export function DebateList() {
       <PageHeader eyebrow="Débattre" title="Débats citoyens" intro="Un débat avance quand les arguments se répondent. Chaque intervention indique sa position : pour, contre ou nuance.">
         <div><DemoTag label="Participants fictifs" /></div>
       </PageHeader>
-      <ul className="flex flex-col gap-3">
+      <ul className="grid gap-4 md:grid-cols-2">
         {debates.map((d) => {
           const list = args.filter((a) => a.debateId === d.id)
           const count = (st: Stance) => list.filter((a) => a.stance === st).length
           return (
             <li key={d.id}>
-              <a href={href('debat', d.id)} className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4 shadow-card hover:bg-surface2 sm:p-5">
-                <span className="font-serif text-xl leading-snug font-medium text-ink">{d.title}</span>
-                <span className="text-sm text-ink2">{d.prompt}</span>
-                <span className="num text-sm text-ink3">{count('pour')} pour · {count('contre')} contre · {count('nuance')} en nuance</span>
+              <a href={href('debat', d.id)} className="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-card hover:bg-surface2">
+                <EditorialImage photo={d.photo} className="h-32 w-full" position="50% 30%" />
+                <span className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
+                  <span className="font-serif text-xl leading-snug font-medium text-ink">{d.title}</span>
+                  <span className="text-sm text-ink2">{d.prompt}</span>
+                  <span className="num mt-auto pt-1 text-sm text-ink3">{count('pour')} pour · {count('contre')} contre · {count('nuance')} en nuance</span>
+                </span>
               </a>
             </li>
           )

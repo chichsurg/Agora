@@ -4,21 +4,26 @@ import { href } from '../app/router'
 import { consultations, debates, dossiers, upcomingDossiers } from '../data/demo'
 import { phase } from '../domain/tally'
 import type { Dossier, Point } from '../domain/types'
-import { Arch, Badge, Card, cx, date, Empty, NotFound, Notice, PageHeader, Section } from '../ui/kit'
+import { EditorialImage } from '../ui/brand'
+import { Badge, Card, cx, date, Empty, NotFound, Notice, PageHeader, Section } from '../ui/kit'
 
 export function DossierList() {
   return (
     <>
       <PageHeader eyebrow="S'informer" title="Dossiers" intro="Chaque dossier réunit les faits établis, les enjeux, des points de vue contradictoires et les sources pour vérifier." />
-      <ul className="flex flex-col gap-3">
+      <ul className="grid gap-4 md:grid-cols-2">
         {dossiers.map((d) => (
           <li key={d.id}>
-            <a href={href('dossier', d.id)} className="relative flex flex-col gap-2 overflow-hidden rounded-2xl border border-line bg-surface p-5 shadow-card hover:bg-surface2">
-              <Arch className="absolute -right-4 -bottom-8 h-28 w-28 opacity-30" />
-              <p className="eyebrow text-accentink">{d.theme}</p>
-              <h2 className="font-serif text-2xl leading-tight font-medium text-ink">{d.title}</h2>
-              <p className="max-w-[58ch] text-sm text-ink2">{d.summary}</p>
-              <p className="text-sm text-ink3">Mis à jour le {date(d.updatedAt)}</p>
+            <a href={href('dossier', d.id)} className="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-card hover:bg-surface2">
+              <span className="relative block">
+                <EditorialImage photo={d.photo} className="h-40 w-full" />
+                <span className="absolute bottom-2.5 left-2.5 rounded-md bg-white px-2 py-0.5 text-[0.68rem] font-bold tracking-wider text-[#0f1b3d] uppercase">{d.theme}</span>
+              </span>
+              <span className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
+                <h2 className="font-serif text-2xl leading-tight font-medium text-ink">{d.title}</h2>
+                <span className="text-sm text-ink2">{d.summary}</span>
+                <span className="mt-auto pt-1 text-sm text-ink3">{d.facts.length} faits sourcés · {d.sources.length} sources · mis à jour le {date(d.updatedAt)}</span>
+              </span>
             </a>
           </li>
         ))}
@@ -66,6 +71,8 @@ export function DossierPage({ id }: { id: string }) {
       <PageHeader back={{ href: href('dossiers'), label: 'Dossiers' }} eyebrow={d.theme} title={d.title} intro={d.summary}>
         <p className="text-sm text-ink3">Mis à jour le {date(d.updatedAt)}</p>
       </PageHeader>
+
+      <EditorialImage photo={d.photo} className="h-40 w-full rounded-2xl sm:h-56" />
 
       {d.editorial === 'brouillon-ia' && (
         <Notice title="Contenu en attente de relecture">
