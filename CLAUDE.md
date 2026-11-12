@@ -46,6 +46,12 @@ Principe : nous n'avons pas besoin d'être d'accord pour réfléchir ensemble.
   - `src/domain/search.ts` recherche locale (sans accents, tous les mots requis, pas de classement par popularité).
 - Couleurs : uniquement via les jetons de `src/index.css` (clair + sombre). Polices : Plus Jakarta Sans
   (interface), Fraunces (titres éditoriaux).
+- Identité : les planches du fondateur font foi (REF-14 accueil, REF-10 design system, REF-15 composants,
+  REF-12 graphiques, REF-01/09 logo). Ne jamais inventer d'identité ni remplacer un élément fourni par un
+  équivalent générique. Logo, icônes et photos vivent dans `public/assets/` et passent par
+  `src/ui/brand.tsx` (`BrandLogo`, `ReferenceIcon`, `EditorialImage`). Toute photo est sous licence libre,
+  créditée dans `src/data/media.ts`. Détails et décisions en attente : skill `agora-design`.
+- On reproduit la composition des maquettes, jamais leurs contenus d'exemple (sujets, chiffres, actualités).
 - Accessibilité : cibles tactiles ≥ 44 px, focus visible, libellés, contrastes AA, `prefers-reduced-motion`.
 - Le prototype local n'est pas une plateforme multi-utilisateurs sécurisée : ne jamais le présenter ainsi.
   En version connectée, toute permission se vérifie côté serveur.
@@ -57,7 +63,8 @@ Principe : nous n'avons pas besoin d'être d'accord pour réfléchir ensemble.
 
 ## Aperçu sur iPhone
 
-Après `npm run build:artifact`, publie `dist-artifact/agora.html` avec l'outil Artifact,
+Après `npm run build:artifact`, publie `dist-artifact/agora.html` avec l'outil Artifact (avec
+`root: public` et la liste `files` des fichiers de `public/assets/` utilisés, sinon logo et photos manquent),
 en passant `url: https://claude.ai/artifact/ThUPtNLZxVb9vxV4swFLbu` pour conserver la même adresse. Contraintes de l'aperçu : ancres simples
 uniquement, pas de `confirm()`/`alert()`, pas de téléchargement, pas de service worker.
 
@@ -67,7 +74,9 @@ uniquement, pas de `confirm()`/`alert()`, pas de téléchargement, pas de servic
 
 ## Mise en ligne
 
-Dépôt public `chichsurg/Agora`. Chaque push sur `main` lance les tests puis publie sur GitHub Pages
+Dépôt public `chichsurg/Agora`. Toute évolution se prépare sur une branche et passe par une pull request :
+ne jamais pousser sur `main` ni fusionner sans l'accord explicite du fondateur.
+Chaque push sur `main` lance les tests puis publie sur GitHub Pages
 (`.github/workflows/pages.yml`) : https://chichsurg.github.io/Agora/
 Le dépôt est public : n'y place jamais de secret ni de donnée personnelle.
 

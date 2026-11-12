@@ -7,15 +7,26 @@ description: Direction artistique, qualité mobile et accessibilité d'AGORA. À
 
 ## Identité
 - Bleu nuit `#0F1B3D`, ivoire `#F6F4EF`, indigo `#6246EA`, lavande `#A78BFA` / `#E9E6FF`, sable. Rappel tricolore discret (un filet, jamais un aplat).
-- Symbole : l'arche (`Arch` dans `src/ui/kit.tsx`), provisoire tant que le logo vectoriel officiel n'est pas fourni. Ne pas la déformer ni la recolorer.
+- Logo : fichiers de `public/assets/brand/`, extraits du logo original (REF-01) et vérifiés par superposition. Toujours passer par `BrandLogo` (`src/ui/brand.tsx`). Ne jamais redessiner l'arche en code, la déformer ou la recolorer. Version sur fond sombre : mot « AGORA » en blanc, conforme à REF-09, à confirmer par le fondateur.
+- Icônes de la charte (`public/assets/icons/` : `agora`, `charte`, `debats`, `le-projet`, `sources`) : PNG originaux, affichés tels quels via `ReferenceIcon`. Les utiliser quand le sens correspond ; pour le reste (barres de navigation, actions), Lucide en trait de 1,9.
 - Plus Jakarta Sans pour l'interface ; Fraunces pour les titres éditoriaux (h1, questions de consultation, chiffres clés) seulement.
-- Pas de photo ni d'illustration générée : motifs d'arche et aplats.
+- Photographies : bienvenues dans le hero, les cartes éditoriales et les miniatures (REF-14, REF-15), via `EditorialImage`. Conditions : licence libre vérifiée, auteur et licence inscrits dans `src/data/media.ts` (affichés dans les crédits), image décorative (`alt=""`) qui ne porte jamais seule l'information. Jamais de photo sur un bulletin de vote, jamais de photo présentée comme celle de participants, jamais d'image générée présentée comme réelle, jamais de morceau de planche de référence collé dans l'interface.
+
+## Références visuelles (sources de vérité)
+- REF-14 : accueil desktop et mobile. REF-10 : design system. REF-15 : composants. REF-12 : graphiques. REF-01/09 : logo.
+- Reproduire la composition, pas le contenu : les sujets, compteurs, actualités et pourcentages des maquettes sont des exemples. On n'affiche que les données réelles du prototype, étiquetées.
+- Les modèles de REF-12 sans donnée correspondante (cartes régionales, comparaisons européennes, évolutions en %) ne sont pas construits.
+
+## Décisions en attente du fondateur (ne pas trancher seul)
+- Charte : REF-10 (Plus Jakarta Sans, Fraunces, `#F6F4EF`, `#0F1B3D`) contre la charte produit antérieure (Manrope, Inter, `#F6F5F1`, `#141B35`, abricot `#F2B99E`). Le dépôt suit REF-10.
+- Libellés de navigation : « Dossiers » occupe la place d'« Actualité » de REF-14.
+- Titre d'accueil « Des citoyens. Des idées. Une République à construire. » : texte éditorial ; la signature reste « La place publique, réinventée. ».
 
 ## Règles
 1. Toute couleur passe par un jeton de `src/index.css` (`bg-surface`, `text-ink2`, `text-accentink`…). Vérifier clair ET sombre.
 2. POUR = indigo, CONTRE = encre, BLANC = sable. Jamais vert/rouge : aucun choix n'est « le bon ».
-3. Mobile d'abord (390 px). Cibles tactiles ≥ 44 px (`min-h-11`). Aucun défilement horizontal.
-4. Réutiliser `Button`, `Card`, `Badge`, `Section`, `PageHeader`, `Notice`, `Field`, `VoteBars` avant de créer un composant.
+3. Mobile d'abord (390 px) et tableau de bord large (1440 px) : comparer les captures à REF-14 à ces deux largeurs. Cibles tactiles ≥ 44 px (`min-h-11`). Aucun défilement horizontal.
+4. Réutiliser `Button`, `Card`, `Badge`, `Section`, `PageHeader`, `Notice`, `Field`, `VoteBars`, `BrandLogo`, `ReferenceIcon`, `EditorialImage` avant de créer un composant.
 5. Les cartes sont réservées aux objets cliquables ou autonomes ; le texte courant reste sur le fond.
 6. Animations brèves, désactivées par `prefers-reduced-motion`.
 

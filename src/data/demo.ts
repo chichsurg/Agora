@@ -11,6 +11,7 @@ const at = (days: number) => new Date(Date.now() + days * DAY).toISOString()
 export const dossiers: Dossier[] = [
   {
     id: 'participation-citoyenne',
+    photo: 'soufflot',
     title: 'La participation citoyenne',
     theme: 'Démocratie',
     summary:
@@ -105,6 +106,7 @@ export const dossiers: Dossier[] = [
   },
   {
     id: 'vote-blanc',
+    photo: 'luxembourg',
     title: 'Le vote blanc',
     theme: 'Institutions',
     summary:
@@ -246,12 +248,14 @@ export const consultations: Consultation[] = [
 export const debates: Debate[] = [
   {
     id: 'tirage-au-sort',
+    photo: 'invalides',
     title: "Le tirage au sort peut-il compléter l'élection ?",
     prompt: "Assemblées citoyennes, jurys, conventions : le hasard est-il un bon moyen de désigner celles et ceux qui délibèrent ?",
     dossierId: 'participation-citoyenne',
   },
   {
     id: 'suites-des-consultations',
+    photo: 'assemblee',
     title: 'Que doit devenir un avis citoyen ?',
     prompt: "Un avis rendu par des citoyens doit-il obliger les décideurs à répondre, à voter, ou seulement les éclairer ?",
     dossierId: 'participation-citoyenne',

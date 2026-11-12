@@ -2,7 +2,8 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { BookOpen, CircleUserRound, Home as HomeIcon, Lightbulb, Menu, MessagesSquare, PieChart, ScrollText, Search, ShieldCheck, Vote } from 'lucide-react'
 import { href, useRoute, type Route } from './router'
 import { useStore } from './store'
-import { Arch, cx, NotFound, PageHeader, Wordmark } from '../ui/kit'
+import { cx, NotFound, PageHeader } from '../ui/kit'
+import { BrandLogo, ReferenceIcon, type ReferenceIconName } from '../ui/brand'
 import { Home } from '../features/Home'
 import { DossierList, DossierPage } from '../features/Dossiers'
 import { ConsultationList, ConsultationPage } from '../features/Consultations'
@@ -16,18 +17,20 @@ import { Recherche } from '../features/Recherche'
 
 type Tab = 'accueil' | 'dossiers' | 'consultations' | 'debats' | 'plus'
 
+// Ordre de REF-14 (Accueil, Actualité, Débats, Participer, Plus). « Dossiers » tient la place
+// d'« Actualité » : le libellé définitif reste à confirmer par le fondateur.
 const TABS = [
   { id: 'accueil', label: 'Accueil', icon: HomeIcon, to: href('accueil') },
   { id: 'dossiers', label: 'Dossiers', icon: BookOpen, to: href('dossiers') },
-  { id: 'consultations', label: 'Participer', icon: Vote, to: href('consultations') },
   { id: 'debats', label: 'Débats', icon: MessagesSquare, to: href('debats') },
+  { id: 'consultations', label: 'Participer', icon: Vote, to: href('consultations') },
 ] as const
 
-export const MORE = [
-  { label: 'Recherche', hint: 'Dossiers, consultations, débats, propositions', icon: Search, to: href('recherche') },
-  { label: 'Propositions citoyennes', hint: 'Lire, soutenir, proposer', icon: Lightbulb, to: href('propositions') },
+export const MORE: { label: string; short?: string; hint: string; icon: typeof Search; ref?: ReferenceIconName; to: string }[] = [
+  { label: 'Propositions citoyennes', short: 'Propositions', hint: 'Lire, soutenir, proposer', icon: Lightbulb, to: href('propositions') },
   { label: 'Résultats', hint: 'Chiffres, méthode et limites', icon: PieChart, to: href('resultats') },
-  { label: 'Règles et transparence', hint: 'Comptage, modération, données', icon: ScrollText, to: href('regles') },
+  { label: 'Recherche', hint: 'Dossiers, consultations, débats, propositions', icon: Search, to: href('recherche') },
+  { label: 'Le projet et ses règles', short: 'Le projet', hint: 'Principes, comptage, modération, données', icon: ScrollText, ref: 'charte', to: href('regles') },
   { label: 'Profil', hint: 'Pseudonyme, affichage, vos données', icon: CircleUserRound, to: href('profil') },
   { label: 'Administration', hint: 'Modération et journal (démonstration)', icon: ShieldCheck, to: href('admin') },
 ]
@@ -50,7 +53,7 @@ function Plus() {
         {MORE.map((m) => (
           <li key={m.to}>
             <a href={m.to} className="flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3 hover:bg-surface2">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-soft text-accentink"><m.icon size={20} aria-hidden="true" /></span>
+              {m.ref ? <ReferenceIcon name={m.ref} size="sm" /> : <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-soft text-accentink"><m.icon size={20} aria-hidden="true" /></span>}
               <span className="min-w-0">
                 <span className="block font-semibold text-ink">{m.label}</span>
                 <span className="block text-sm text-ink3">{m.hint}</span>
@@ -85,11 +88,19 @@ function screen(r: Route): ReactNode {
   }
 }
 
+/** Largeur utile selon l'écran : tableau de bord large à l'accueil, colonne de lecture ailleurs. */
+function widthOf(r: Route): string {
+  if (r.name === 'accueil') return 'max-w-[92rem]'
+  if (r.name === 'resultats' || r.name === 'dossiers' || r.name === 'debats') return 'max-w-5xl'
+  return 'max-w-3xl'
+}
+
 export function App() {
   const route = useRoute()
   const { theme } = useStore()
   const key = 'id' in route ? `${route.name}-${route.id}` : route.name
   const tab = tabOf(route)
+  const home = route.name === 'accueil'
   const first = useRef(true)
 
   // Préférence d'affichage : "système" laisse la main au téléphone (ou à l'hôte de l'aperçu).
@@ -115,48 +126,62 @@ export function App() {
     document.getElementById('page-title')?.focus({ preventScroll: true })
   }, [key])
 
+  const railItems = [
+    ...TABS.map((t) => ({ ...t, active: tab === t.id })),
+    ...MORE.slice(0, 4).map((m) => ({ ...m, label: m.short ?? m.label, id: m.to, active: '#' + key === m.to || (m.to === href('propositions') && ['proposition', 'proposer'].includes(route.name)) })),
+  ]
+  const railLink = (active: boolean) =>
+    cx('flex min-h-11 items-center gap-3.5 rounded-xl px-3.5 text-[0.95rem]', active ? 'bg-bg font-bold text-accentink shadow-card' : 'font-medium text-ink2 hover:bg-surface2')
+
   return (
-    <div className="min-h-full lg:pl-64">
+    <div className="min-h-full lg:pl-60">
       <a href="#contenu" onClick={(e) => { e.preventDefault(); document.getElementById('page-title')?.focus() }}
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-3 focus:py-2">
         Aller au contenu
       </a>
 
-      {/* Rail latéral (grand écran) */}
-      <nav aria-label="Navigation principale" className="fixed inset-y-0 left-0 hidden w-64 flex-col gap-1 border-r border-line bg-surface px-4 py-6 lg:flex">
-        <a href={href('accueil')} className="mb-6 flex items-center gap-3 px-2">
-          <Arch className="h-8 w-8" />
-          <Wordmark />
+      {/* Rail latéral (grand écran), composition de REF-14 */}
+      <nav aria-label="Navigation principale" className="fixed inset-y-0 left-0 hidden w-60 flex-col gap-1 overflow-y-auto border-r border-line bg-surface px-4 pt-7 pb-5 lg:flex">
+        <a href={href('accueil')} className="mb-7 self-center rounded-xl p-1" aria-label="AGORA, accueil">
+          <BrandLogo variant="stacked" />
         </a>
-        {[...TABS.map((t) => ({ ...t, active: tab === t.id })), ...MORE.map((m) => ({ ...m, id: m.to, active: '#' + key === m.to || (m.to === href('propositions') && ['proposition', 'proposer'].includes(route.name)) }))].map((t) => (
-          <a key={t.id} href={t.to} aria-current={t.active ? 'page' : undefined}
-            className={cx('flex min-h-11 items-center gap-3 rounded-xl px-3 text-[0.95rem] font-medium', t.active ? 'bg-soft text-accentink' : 'text-ink2 hover:bg-surface2')}>
-            <t.icon size={19} aria-hidden="true" />
+        {railItems.map((t) => (
+          <a key={t.id} href={t.to} aria-current={t.active ? 'page' : undefined} className={railLink(t.active)}>
+            <t.icon size={20} strokeWidth={1.9} fill={t.active && t.id === 'accueil' ? 'currentColor' : 'none'} aria-hidden="true" />
             {t.label}
           </a>
         ))}
-        <p className="mt-auto px-2 text-xs text-ink3">Prototype de démonstration. Les votes et les participants affichés sont fictifs.</p>
+        <div className="mt-auto flex flex-col gap-1 pt-6">
+          {MORE.slice(4).map((m) => (
+            <a key={m.to} href={m.to} aria-current={'#' + key === m.to ? 'page' : undefined} className={railLink('#' + key === m.to)}>
+              <m.icon size={20} strokeWidth={1.9} aria-hidden="true" />
+              {m.label}
+            </a>
+          ))}
+          <p className="mt-3 px-2 text-xs text-ink3">Prototype de démonstration. Les votes et les participants affichés sont fictifs.</p>
+        </div>
       </nav>
 
-      {/* En-tête (mobile) */}
-      <header className="gutter sticky z-30 flex h-14 items-center justify-between border-b border-line bg-bg/90 backdrop-blur lg:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
-        <a href={href('accueil')} className="flex min-h-11 items-center gap-2.5" aria-label="AGORA, accueil">
-          <Arch className="h-7 w-7" />
-          <Wordmark className="text-sm" />
-        </a>
-        <div className="flex items-center gap-1">
-          <a href={href('regles')} className="rounded-full bg-sand/40 px-2.5 py-1 text-xs font-semibold text-ink">Prototype</a>
-          <a href={href('recherche')} aria-label="Rechercher" className="grid size-11 place-items-center rounded-full text-ink2 hover:bg-surface2">
-            <Search size={22} aria-hidden="true" />
+      {/* En-tête (mobile). À l'accueil, le hero porte lui-même le logo, comme sur REF-14. */}
+      {!home && (
+        <header className="gutter sticky z-30 flex h-14 items-center justify-between border-b border-line bg-bg/90 backdrop-blur lg:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
+          <a href={href('accueil')} className="flex min-h-11 items-center" aria-label="AGORA, accueil">
+            <BrandLogo variant="row" />
           </a>
-          <a href={href('profil')} aria-label="Profil" className="grid size-11 place-items-center rounded-full text-ink2 hover:bg-surface2">
-            <CircleUserRound size={24} aria-hidden="true" />
-          </a>
-        </div>
-      </header>
+          <div className="flex items-center">
+            <a href={href('regles')} className="mr-1 rounded-full bg-sand/40 px-2.5 py-1 text-xs font-semibold text-ink">Prototype</a>
+            <a href={href('recherche')} aria-label="Rechercher" className="grid size-11 place-items-center rounded-full text-ink2 hover:bg-surface2">
+              <Search size={22} aria-hidden="true" />
+            </a>
+            <a href={href('profil')} aria-label="Profil" className="grid size-11 place-items-center rounded-full text-ink2 hover:bg-surface2">
+              <CircleUserRound size={24} aria-hidden="true" />
+            </a>
+          </div>
+        </header>
+      )}
 
-      <main id="contenu" className="gutter mx-auto max-w-3xl pb-28 lg:max-w-4xl lg:pb-16">
-        <div key={key} className="rise flex flex-col gap-7 py-4 lg:py-8">{screen(route)}</div>
+      <main id="contenu" className={cx('mx-auto pb-28 lg:pb-16', home ? 'lg:px-6' : 'gutter', widthOf(route))}>
+        <div key={key} className={cx('rise flex flex-col gap-7', home ? 'lg:py-6' : 'py-4 lg:py-8')}>{screen(route)}</div>
       </main>
 
       {/* Barre d'onglets (mobile) */}
@@ -167,8 +192,8 @@ export function App() {
             return (
               <li key={t.id}>
                 <a href={t.to} aria-current={active ? 'page' : undefined}
-                  className={cx('flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.7rem] font-semibold', active ? 'text-accentink' : 'text-ink3')}>
-                  <span className={cx('grid h-7 w-12 place-items-center rounded-full', active && 'bg-soft')}><t.icon size={20} aria-hidden="true" /></span>
+                  className={cx('flex min-h-[3.75rem] flex-col items-center justify-center gap-1 text-[0.72rem]', active ? 'font-bold text-accentink' : 'font-medium text-ink3')}>
+                  <t.icon size={23} strokeWidth={1.9} fill={active && t.id === 'accueil' ? 'currentColor' : 'none'} aria-hidden="true" />
                   {t.label}
                 </a>
               </li>

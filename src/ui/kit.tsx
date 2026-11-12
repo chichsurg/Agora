@@ -1,4 +1,4 @@
-import { useId, type ComponentProps, type ReactNode } from 'react'
+import { type ComponentProps, type ReactNode } from 'react'
 import { ArrowLeft, FlaskConical } from 'lucide-react'
 import { CHOICES, percentages, total } from '../domain/tally'
 import type { Choice, Tally } from '../domain/types'
@@ -14,26 +14,6 @@ export function ago(iso: string): string {
   const d = Math.round((Date.now() - Date.parse(iso)) / 86_400_000)
   if (d <= 0) return "aujourd'hui"
   return d === 1 ? 'hier' : `il y a ${d} jours`
-}
-
-/** Symbole provisoire d'AGORA : une arche, redessinée d'après les planches de référence. */
-export function Arch({ className, tone = 'brand' }: { className?: string; tone?: 'brand' | 'light' }) {
-  const id = useId()
-  return (
-    <svg viewBox="0 0 48 46" className={className} aria-hidden="true">
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={tone === 'light' ? '#b7a8fd' : '#6246ea'} />
-          <stop offset="1" stopColor={tone === 'light' ? '#b7a8fd' : '#a78bfa'} stopOpacity={tone === 'light' ? 0.15 : 0.25} />
-        </linearGradient>
-      </defs>
-      <path d="M0 46V24a24 24 0 0 1 48 0v22H36V24a12 12 0 0 0-24 0v22z" fill={`url(#${id})`} />
-    </svg>
-  )
-}
-
-export function Wordmark({ className }: { className?: string }) {
-  return <span className={cx('font-semibold tracking-[0.32em] text-ink', className)}>AGORA</span>
 }
 
 const btnBase =

@@ -1,3 +1,4 @@
+import { photos } from '../data/media'
 import { PageHeader } from '../ui/kit'
 
 const RULES: { title: string; items: string[] }[] = [
@@ -53,6 +54,10 @@ export function Regles() {
   return (
     <>
       <PageHeader eyebrow="Transparence" title="Règles d'AGORA" intro="Comment fonctionnent les consultations, la modération et la gestion de vos données." />
+      <div className="flex justify-center rounded-3xl border border-line bg-surface px-6 py-8">
+        <img src={`${import.meta.env.BASE_URL}assets/brand/agora-logo-clair.png`} alt="AGORA — La place publique, réinventée." width={952} height={696} className="theme-light h-auto w-56" />
+        <img src={`${import.meta.env.BASE_URL}assets/brand/agora-logo-sombre.png`} alt="AGORA — La place publique, réinventée." width={952} height={696} className="theme-dark h-auto w-56" />
+      </div>
       {RULES.map((r) => (
         <section key={r.title} className="flex flex-col gap-2">
           <h2 className="text-lg font-bold text-ink">{r.title}</h2>
@@ -61,6 +66,17 @@ export function Regles() {
           </ul>
         </section>
       ))}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-lg font-bold text-ink">Crédits photographiques</h2>
+        <p className="max-w-[68ch] text-[0.97rem] text-ink2">Les photographies illustrent les sujets sans les documenter. Elles proviennent de Wikimedia Commons et ont été recadrées.</p>
+        <ul className="flex max-w-[68ch] list-disc flex-col gap-1.5 pl-5 text-[0.97rem] text-ink2">
+          {Object.values(photos).map((p) => (
+            <li key={p.file}>
+              <a href={p.source} target="_blank" rel="noopener noreferrer" className="font-semibold text-accentink underline">{p.subject}</a>, {p.author}, <a href={p.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline">{p.license}</a>.
+            </li>
+          ))}
+        </ul>
+      </section>
     </>
   )
 }
