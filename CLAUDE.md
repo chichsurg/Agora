@@ -66,6 +66,6 @@ uniquement, pas de `confirm()`/`alert()`, pas de téléchargement, pas de servic
 
 ## Mise en ligne
 
-Dépôt public `chichsurg/agora`. Chaque push sur `main` lance les tests puis publie sur GitHub Pages
-(`.github/workflows/pages.yml`) : https://chichsurg.github.io/agora/
+Dépôt public `chichsurg/Agora`. Chaque push sur `main` lance les tests puis publie sur GitHub Pages
+(`.github/workflows/pages.yml`) : https://chichsurg.github.io/Agora/
 Le dépôt est public : n'y place jamais de secret ni de donnée personnelle.
