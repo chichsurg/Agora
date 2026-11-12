@@ -19,12 +19,18 @@ description: Direction artistique, qualité mobile et accessibilité d'AGORA. À
 
 ## Décisions en attente du fondateur (ne pas trancher seul)
 - Charte : REF-10 (Plus Jakarta Sans, Fraunces, `#F6F4EF`, `#0F1B3D`) contre la charte produit antérieure (Manrope, Inter, `#F6F5F1`, `#141B35`, abricot `#F2B99E`). Le dépôt suit REF-10.
+- Palette de participation ci-dessus, et le fait que POUR partage le violet de la marque.
 - Libellés de navigation : « Dossiers » occupe la place d'« Actualité » de REF-14.
 - Titre d'accueil « Des citoyens. Des idées. Une République à construire. » : texte éditorial ; la signature reste « La place publique, réinventée. ».
 
 ## Règles
 1. Toute couleur passe par un jeton de `src/index.css` (`bg-surface`, `text-ink2`, `text-accentink`…). Vérifier clair ET sombre.
-2. POUR = indigo, CONTRE = encre, BLANC = sable. Jamais vert/rouge : aucun choix n'est « le bon ».
+2. Couleurs de participation (palette de travail, à valider par le fondateur) : POUR violet `#6246EA`, CONTRE terracotta `#B94E34`, BLANC gris `#C0C5CE`. Chaque choix a quatre jetons (`--pour`, `--pour-ink`, `--pour-soft`, `--on-pour`, etc.) en clair et en sombre ; passer par `CHOICE_TONE` (`src/ui/kit.tsx`).
+   - Même gabarit pour les trois choix : taille, graisse, forme, emplacement. Jamais de vert/rouge, de coche « bon » ou de croix « mauvais ».
+   - Le gris BLANC n'atteint pas 3:1 sur fond clair : il porte toujours un liseré `--blanc-edge` (barres, anneau, pastilles).
+   - Le terracotta est proche d'une couleur d'erreur : ne jamais l'associer à une icône d'alerte ; `--alert` reste réservé aux erreurs.
+   - Le violet POUR est aussi la couleur de marque : les retours neutres (vote enregistré, étape en cours) n'utilisent pas le fond du choix opposé, et le bandeau « Vote enregistré » est en encre neutre.
+   - `npm test` vérifie les contrastes AA et l'équivalence de poids entre POUR et CONTRE : ne pas changer une couleur sans que ce test passe.
 3. Mobile d'abord (390 px) et tableau de bord large (1440 px) : comparer les captures à REF-14 à ces deux largeurs. Cibles tactiles ≥ 44 px (`min-h-11`). Aucun défilement horizontal.
 4. Réutiliser `Button`, `Card`, `Badge`, `Section`, `PageHeader`, `Notice`, `Field`, `VoteBars`, `BrandLogo`, `ReferenceIcon`, `EditorialImage` avant de créer un composant.
 5. Les cartes sont réservées aux objets cliquables ou autonomes ; le texte courant reste sur le fond.

@@ -16,9 +16,12 @@
   --lav: #a78bfa;
   --sand: #cdb9a3;
   --night: #0f1b3d;
-  --pour: #6246ea;
-  --contre: #0f1b3d;
-  --blanc: #cdb9a3;
+  /* Participation. Trois familles de même construction : aplat, texte lisible, fond doux, texte sur aplat.
+     Aucune n'emprunte une couleur d'état (succès, erreur). Contrastes vérifiés par src/ui/contrast.test.ts. */
+  --pour: #6246ea;   --pour-ink: #5237d6;   --pour-soft: #eeebfd;   --on-pour: #ffffff;
+  --contre: #b94e34; --contre-ink: #9a3e28; --contre-soft: #f8ece8; --on-contre: #ffffff;
+  --blanc: #c0c5ce;  --blanc-ink: #4f5563;  --blanc-soft: #eef0f3;  --on-blanc: #0f1b3d;
+  --blanc-edge: #717888; /* le gris BLANC est trop clair pour se détacher seul : il porte un liseré */
   --alert: #b3261e;
   --alert-soft: #fbeceb;
   --shadow: 0 1px 2px rgb(15 27 61 / 0.05), 0 8px 24px -12px rgb(15 27 61 / 0.14);
@@ -27,8 +30,10 @@
   :root:not([data-theme="light"]) {
     --bg: #0a1230; --surface: #121c42; --surface2: #1a2553; --ink: #f3f1fa; --ink2: #c3c7e0;
     --ink3: #979dc0; --line: #28335f; --accent: #6246ea; --accent-ink: #b7a8fd; --soft: #25215f;
-    --lav: #a78bfa; --sand: #cdb9a3; --night: #060c24; --pour: #9480f8; --contre: #f3f1fa;
-    --blanc: #cdb9a3; --alert: #ffb4ab; --alert-soft: #3d1614;
+    --lav: #a78bfa; --sand: #cdb9a3; --night: #060c24; --pour: #9c8cf9; --pour-ink: #c4b8ff; --pour-soft: #262063; --on-pour: #0a1230;
+    --contre: #e07a5f; --contre-ink: #f2a68f; --contre-soft: #3a2027; --on-contre: #0a1230;
+    --blanc: #8e95a3; --blanc-ink: #c9ced8; --blanc-soft: #232b48; --on-blanc: #0a1230; --blanc-edge: #8e95a3;
+    --alert: #ffb4ab; --alert-soft: #3d1614;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
     color-scheme: dark;
   }
@@ -36,8 +41,10 @@
 :root[data-theme="dark"] {
   --bg: #0a1230; --surface: #121c42; --surface2: #1a2553; --ink: #f3f1fa; --ink2: #c3c7e0;
   --ink3: #979dc0; --line: #28335f; --accent: #6246ea; --accent-ink: #b7a8fd; --soft: #25215f;
-  --lav: #a78bfa; --sand: #cdb9a3; --night: #060c24; --pour: #9480f8; --contre: #f3f1fa;
-  --blanc: #cdb9a3; --alert: #ffb4ab; --alert-soft: #3d1614;
+  --lav: #a78bfa; --sand: #cdb9a3; --night: #060c24; --pour: #9c8cf9; --pour-ink: #c4b8ff; --pour-soft: #262063; --on-pour: #0a1230;
+  --contre: #e07a5f; --contre-ink: #f2a68f; --contre-soft: #3a2027; --on-contre: #0a1230;
+  --blanc: #8e95a3; --blanc-ink: #c9ced8; --blanc-soft: #232b48; --on-blanc: #0a1230; --blanc-edge: #8e95a3;
+  --alert: #ffb4ab; --alert-soft: #3d1614;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
   color-scheme: dark;
 }
@@ -57,8 +64,18 @@
   --color-sand: var(--sand);
   --color-night: var(--night);
   --color-pour: var(--pour);
+  --color-pourink: var(--pour-ink);
+  --color-poursoft: var(--pour-soft);
+  --color-onpour: var(--on-pour);
   --color-contre: var(--contre);
+  --color-contreink: var(--contre-ink);
+  --color-contresoft: var(--contre-soft);
+  --color-oncontre: var(--on-contre);
   --color-blanc: var(--blanc);
+  --color-blancink: var(--blanc-ink);
+  --color-blancsoft: var(--blanc-soft);
+  --color-onblanc: var(--on-blanc);
+  --color-blancedge: var(--blanc-edge);
   --color-alert: var(--alert);
   --color-alertsoft: var(--alert-soft);
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -132,3 +149,17 @@ h1, h2, h3 { text-wrap: balance; }
 
 /* Le titre reçoit le focus à chaque changement d'écran (lecteurs d'écran) : pas d'anneau visible. */
 #page-title:focus-visible { outline: none; }
+
+/* --- Participation : choix de vote, arguments, étapes --- */
+/* Un choix (radio ou case) reste un vrai champ de formulaire, masqué visuellement ;
+   son étiquette porte l'anneau de focus clavier. */
+.choice:has(:focus-visible) { outline: 3px solid var(--lav); outline-offset: 2px; }
+.choice { transition: background-color 0.15s, border-color 0.15s, transform 0.1s; }
+.choice:active, .press:active { transform: scale(0.985); }
+.press { transition: transform 0.1s, background-color 0.15s; }
+/* Barre d'actions collée au-dessus des onglets sur mobile : le pouce atteint « Continuer ». */
+.action-bar { position: sticky; bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px)); z-index: 20; }
+@media (min-width: 64rem) { .action-bar { position: static; } }
+@keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+.pop { animation: pop 0.25s ease-out; }
+@media (prefers-reduced-motion: reduce) { .press:active, .choice:active { transform: none; } }

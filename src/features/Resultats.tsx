@@ -1,11 +1,12 @@
-import { BarChart3, FileText, Lock, MessageSquare, Vote } from 'lucide-react'
+import { useState } from 'react'
+import { BarChart3, EyeOff, FileText, Lock, MessageSquare, Vote } from 'lucide-react'
 import { href } from '../app/router'
 import { useStore } from '../app/store'
 import { consultations } from '../data/demo'
 import { CHOICES, cumulative, outcome, percentages, phase, total, withVote } from '../domain/tally'
 import type { Consultation, Tally } from '../domain/types'
 import { ReferenceIcon } from '../ui/brand'
-import { Badge, Card, CHOICE_LABEL, date, DemoTag, Notice, num, PageHeader, Section } from '../ui/kit'
+import { Badge, Button, Card, CHOICE_LABEL, date, DemoTag, LinkButton, Notice, num, PageHeader, Section } from '../ui/kit'
 import { OUTCOME_TEXT } from './Consultations'
 
 // Modèles de REF-12 : données clés, diagramme circulaire avec légende, courbe d'évolution,
@@ -30,7 +31,14 @@ function Donut({ tally }: { tally: Tally }) {
         <circle cx="70" cy="70" r={R} fill="none" stroke="var(--surface2)" strokeWidth="17" />
         {n > 0 && CHOICES.map((c) => {
           const len = (tally[c] / n) * C
-          const seg = <circle key={c} cx="70" cy="70" r={R} fill="none" stroke={STROKE[c]} strokeWidth="17" strokeDasharray={`${Math.max(0, len - 1.5)} ${C}`} strokeDashoffset={-offset} />
+          const dash = { strokeDasharray: `${Math.max(0, len - 1.5)} ${C}`, strokeDashoffset: -offset }
+          // Le gris BLANC est trop clair pour se détacher seul : un liseré plus soutenu l'entoure.
+          const seg = (
+            <g key={c}>
+              {c === 'blanc' && <circle cx="70" cy="70" r={R} fill="none" stroke="var(--blanc-edge)" strokeWidth="17" {...dash} />}
+              <circle cx="70" cy="70" r={R} fill="none" stroke={STROKE[c]} strokeWidth={c === 'blanc' ? 15 : 17} {...dash} />
+            </g>
+          )
           offset += len
           return seg
         })}
@@ -42,7 +50,7 @@ function Donut({ tally }: { tally: Tally }) {
       <dl className="flex min-w-[11rem] flex-1 flex-col gap-2.5 text-[0.95rem]">
         {CHOICES.map((c) => (
           <div key={c} className="flex items-center gap-2.5">
-            <span aria-hidden="true" className="size-3 shrink-0 rounded-full" style={{ background: STROKE[c] }} />
+            <span aria-hidden="true" className="size-3 shrink-0 rounded-full" style={{ background: STROKE[c], boxShadow: c === 'blanc' ? 'inset 0 0 0 1px var(--blanc-edge)' : undefined }} />
             <dt className="font-semibold text-ink">{CHOICE_LABEL[c]}</dt>
             <dd className="num ml-auto text-ink2"><span className="font-bold text-ink">{pct[c]} %</span> · {num(tally[c])}</dd>
           </div>
@@ -79,6 +87,48 @@ function Evolution({ c }: { c: Consultation }) {
         <text x={W - R} y={H - 5} fontSize="10" textAnchor="end" fill="var(--ink3)">Jour {points.length}</text>
       </svg>
     </figure>
+  )
+}
+
+/**
+ * Résultat d'une consultation. Tant qu'elle est ouverte et que la personne n'a pas voté,
+ * les chiffres restent masqués : elle peut les afficher, mais ils ne s'imposent pas à elle.
+ */
+function ResultCard({ c, tally, voted }: { c: Consultation; tally: Tally; voted: boolean }) {
+  const [revealed, setRevealed] = useState(false)
+  const now = new Date()
+  const ph = phase(c, now)
+  const masked = ph === 'ouverte' && !voted && !revealed
+  return (
+    <Card as="article" className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone={ph === 'ouverte' ? 'soft' : 'outline'}>{ph === 'ouverte' ? 'Provisoire' : 'Définitif'}</Badge>
+        <span className="text-sm text-ink3">Du {date(c.opensAt)} au {date(c.closesAt)}</span>
+      </div>
+      <h2 className="font-serif text-xl leading-snug font-medium text-ink">
+        <a href={href('consultation', c.id)} className="hover:underline">{c.question}</a>
+      </h2>
+      {masked ? (
+        <div className="flex flex-col items-start gap-3 rounded-2xl bg-surface2 p-4">
+          <p className="flex items-center gap-2 font-bold text-ink"><EyeOff size={18} aria-hidden="true" /> Résultats provisoires masqués</p>
+          <p className="text-[0.95rem] text-ink2">Vous n'avez pas encore voté. Voir les chiffres avant de répondre peut influencer votre avis.</p>
+          <div className="flex flex-wrap gap-2">
+            <LinkButton href={href('consultation', c.id)}>Lire et voter</LinkButton>
+            <Button tone="secondary" onClick={() => setRevealed(true)}>Afficher les résultats</Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Donut tally={tally} />
+          <p className="font-medium text-ink">{OUTCOME_TEXT[outcome(tally, c.rule)]}</p>
+          <Evolution c={c} />
+        </>
+      )}
+      <dl className="mt-auto grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3 text-sm">
+        <div><dt className="text-ink3">Participations</dt><dd className="num font-semibold text-ink">{num(total(tally))}</dd></div>
+        <div><dt className="text-ink3">Mise à jour</dt><dd className="font-semibold text-ink">{date(ph === 'close' ? c.closesAt : now.toISOString())}</dd></div>
+      </dl>
+    </Card>
   )
 }
 
@@ -124,28 +174,7 @@ export function Resultats() {
       </dl>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        {list.map((c, i) => {
-          const ph = phase(c, now)
-          const tally = tallies[i]
-          return (
-            <Card as="article" key={c.id} className="flex flex-col gap-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge tone={ph === 'ouverte' ? 'soft' : 'outline'}>{ph === 'ouverte' ? 'Provisoire' : 'Définitif'}</Badge>
-                <span className="text-sm text-ink3">Du {date(c.opensAt)} au {date(c.closesAt)}</span>
-              </div>
-              <h2 className="font-serif text-xl leading-snug font-medium text-ink">
-                <a href={href('consultation', c.id)} className="hover:underline">{c.question}</a>
-              </h2>
-              <Donut tally={tally} />
-              <p className="font-medium text-ink">{OUTCOME_TEXT[outcome(tally, c.rule)]}</p>
-              <Evolution c={c} />
-              <dl className="mt-auto grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3 text-sm">
-                <div><dt className="text-ink3">Participations</dt><dd className="num font-semibold text-ink">{num(total(tally))}</dd></div>
-                <div><dt className="text-ink3">Mise à jour</dt><dd className="font-semibold text-ink">{date(ph === 'close' ? c.closesAt : now.toISOString())}</dd></div>
-              </dl>
-            </Card>
-          )
-        })}
+        {list.map((c, i) => <ResultCard key={c.id} c={c} tally={tallies[i]} voted={!!s.votes[c.id]} />)}
       </div>
 
       <Section id="r-etapes" title="Les étapes d'une consultation sur AGORA">

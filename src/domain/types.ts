@@ -1,4 +1,5 @@
 // Modèle métier d'AGORA. Aucune dépendance à l'interface ni au stockage.
+import type { ThemeId } from './preferences'
 
 export type Choice = 'pour' | 'contre' | 'blanc'
 export type Tally = Record<Choice, number>
@@ -47,6 +48,8 @@ export type CountingRule = 'standard' | 'reformulation-si-blanc'
 
 export interface Consultation {
   id: string
+  /** Thèmes civiques de la consultation : seule base des recommandations. */
+  themes: ThemeId[]
   title: string
   question: string
   context: string

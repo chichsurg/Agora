@@ -7,6 +7,8 @@ import { statusLabel } from '../domain/proposals'
 import { daysLeft, phase, total, withVote } from '../domain/tally'
 import { asset, BrandLogo, EditorialImage, ReferenceIcon, type ReferenceIconName } from '../ui/brand'
 import { ago, Badge, DemoTag, LinkButton, num, Section } from '../ui/kit'
+import { recommend, themeLabel } from '../domain/preferences'
+import { ForYou } from './Consultations'
 
 // Composition de REF-14 : scène architecturale, titre éditorial, consultation en cours,
 // accès rapides, sujets illustrés et fil latéral. Les contenus viennent des données réelles
@@ -31,7 +33,9 @@ export function Home() {
   const s = useStore()
   const now = new Date()
   const open = consultations.filter((c) => phase(c, now) === 'ouverte')
-  const featured = open[0]
+  // Mise en avant : d'abord une consultation liée aux thèmes cochés, sinon la première ouverte.
+  const pick = recommend(consultations, s.prefs, now).forYou[0]
+  const featured = pick?.consultation ?? open[0]
   const args = allArguments(s)
   const proposals = allProposals(s)
   const participations = consultations.reduce((n, c) => n + total(withVote(c.seed, s.votes[c.id]?.choice)), 0)
@@ -113,6 +117,8 @@ export function Home() {
             </ul>
           </nav>
 
+          <ForYou columns="sm:grid-cols-2" />
+
           <Section id="h-sujets" title="Sujets à la une" action={more(href('dossiers'))}>
             <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
               {subjects.map((x) => (
@@ -177,9 +183,10 @@ export function Home() {
             <h2 id="h-consult" className="text-lg font-bold text-ink">Consultation en cours</h2>
             <div className="relative overflow-hidden rounded-2xl">
               <EditorialImage photo="assemblee" className="h-36 w-full" position="50% 40%" />
-              <span className="absolute bottom-2.5 left-2.5 rounded-md bg-white px-2 py-0.5 text-[0.68rem] font-bold tracking-wider text-[#0f1b3d] uppercase">{dossiers.find((d) => d.id === featured.dossierId)?.theme ?? 'Consultation'}</span>
+              <span className="absolute bottom-2.5 left-2.5 rounded-md bg-white px-2 py-0.5 text-[0.68rem] font-bold tracking-wider text-[#0f1b3d] uppercase">{themeLabel(featured.themes[0])}</span>
             </div>
             <p className="text-[1.15rem] leading-snug font-bold text-ink">{featured.question}</p>
+            {pick && <p className="-mt-2 text-sm font-medium text-accentink">Parce que vous suivez : {pick.reasons.map(themeLabel).join(', ')}</p>}
             <div className="flex flex-col gap-1.5">
               <p className="num flex justify-between text-sm text-ink2">
                 <span>Fin dans {daysLeft(featured.closesAt, now)} jours</span>

@@ -31,6 +31,17 @@ Principe : nous n'avons pas besoin d'être d'accord pour réfléchir ensemble.
   sont internes à AGORA, pas des décisions publiques.
 - **Données personnelles** : minimisation. Lecture sans compte. Les votes sont des opinions politiques
   (donnée sensible RGPD) : jamais publics. Aucun justificatif d'identité dans une démo.
+- **Neutralité visuelle** : POUR, CONTRE et BLANC ont le même gabarit (taille, graisse, forme, place).
+  Aucune couleur d'état (succès, erreur), aucune coche ou croix pour désigner une position. L'ordre des
+  colonnes d'arguments alterne d'une consultation à l'autre. Aucun choix n'est présélectionné.
+- **Parcours de consultation** : Découvrir → Comprendre → Choisir → Confirmer → Résultats → Débattre.
+  Rien n'est enregistré avant l'écran de confirmation. Tant qu'une personne n'a pas voté, les résultats
+  d'une consultation ouverte restent masqués par défaut, mais elle peut les afficher sans voter.
+- **Personnalisation** : questionnaire facultatif, jamais bloquant. Les recommandations reposent sur les
+  thèmes cochés, jamais sur les votes, les soutiens ou les arguments : `recommend()` ne les reçoit pas.
+  Chaque recommandation affiche sa raison. La liste complète des consultations reste toujours accessible.
+  En dessous de 15 ans, ni l'âge ni la situation ne sont conservés. AGORA n'envoie aucune notification :
+  ne jamais écrire le contraire tant qu'aucun service n'existe.
 - **IA** : AGORA fonctionne sans IA. Jamais de clé d'API dans le frontend ou le dépôt, jamais d'API payante
   sans accord, jamais de contenu privé envoyé à un tiers. Toute synthèse IA est étiquetée.
 
@@ -43,8 +54,14 @@ Principe : nous n'avons pas besoin d'être d'accord pour réfléchir ensemble.
   - `src/app/` routeur par ancre (`#nom` ou `#nom-id`), store, coquille ;
   - `src/ui/kit.tsx` composants communs ; `src/features/` un fichier par espace ;
   - `src/services/ai.ts` point d'extension IA, désactivé.
+  - `src/domain/preferences.ts` thèmes, questionnaire, recommandations (sans accès aux votes).
   - `src/domain/search.ts` recherche locale (sans accents, tous les mots requis, pas de classement par popularité).
-- Couleurs : uniquement via les jetons de `src/index.css` (clair + sombre). Polices : Plus Jakarta Sans
+- Stockage local : deux clés séparées, `agora.demo.v1` (participations, schéma `v: 2`) et
+  `agora.preferences.v1` (personnalisation). Tout changement de schéma passe par `migrate()` dans
+  `src/data/storage.ts`, avec un test : on ne supprime jamais un vote ni une contribution existants.
+  Des données illisibles sont mises de côté (`agora.demo.sauvegarde`), pas écrasées.
+- Couleurs : uniquement via les jetons de `src/index.css` (clair + sombre). Couleurs de participation :
+  quatre jetons par choix (aplat, `-ink`, `-soft`, `on-`), contrastes vérifiés par `src/ui/contrast.test.ts`. Polices : Plus Jakarta Sans
   (interface), Fraunces (titres éditoriaux).
 - Identité : les planches du fondateur font foi (REF-14 accueil, REF-10 design system, REF-15 composants,
   REF-12 graphiques, REF-01/09 logo). Ne jamais inventer d'identité ni remplacer un élément fourni par un

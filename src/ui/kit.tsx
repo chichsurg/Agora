@@ -17,7 +17,7 @@ export function ago(iso: string): string {
 }
 
 const btnBase =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-[0.95rem] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50'
+  'press inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-[0.95rem] font-semibold disabled:cursor-not-allowed disabled:opacity-50'
 const btnTone = {
   primary: 'bg-accent text-white hover:bg-[#5237d6]',
   secondary: 'border border-line bg-surface text-ink hover:bg-surface2',
@@ -66,7 +66,7 @@ export function Notice({ title, children, tone = 'info' }: { title?: string; chi
   )
 }
 
-export function PageHeader({ eyebrow, title, intro, back, children }: { eyebrow?: string; title: string; intro?: ReactNode; back?: { href: string; label: string }; children?: ReactNode }) {
+export function PageHeader({ eyebrow, title, intro, back, children, compact }: { eyebrow?: string; title: string; intro?: ReactNode; back?: { href: string; label: string }; children?: ReactNode; compact?: boolean }) {
   return (
     <header className="flex flex-col gap-2 pt-2">
       {back && (
@@ -76,7 +76,7 @@ export function PageHeader({ eyebrow, title, intro, back, children }: { eyebrow?
         </a>
       )}
       {eyebrow && <p className="eyebrow text-accentink">{eyebrow}</p>}
-      <h1 id="page-title" tabIndex={-1} className="font-serif text-[1.9rem] leading-[1.12] font-medium text-ink outline-none sm:text-4xl">
+      <h1 id="page-title" tabIndex={-1} className={cx('font-serif font-medium text-ink outline-none', compact ? 'text-[1.3rem] leading-snug sm:text-2xl' : 'text-[1.9rem] leading-[1.12] sm:text-4xl')}>
         {title}
       </h1>
       {intro && <p className="max-w-[62ch] text-ink2">{intro}</p>}
@@ -98,7 +98,15 @@ export function Section({ title, action, children, id }: { title: string; action
 }
 
 export const CHOICE_LABEL: Record<Choice, string> = { pour: 'Pour', contre: 'Contre', blanc: 'Blanc' }
-const BAR: Record<Choice, string> = { pour: 'bg-pour', contre: 'bg-contre', blanc: 'bg-blanc' }
+/**
+ * Habillage des trois choix. Même construction pour chacun : aucune forme, taille ou graisse
+ * ne distingue une position d'une autre. Le gris BLANC, trop clair seul, porte un liseré.
+ */
+export const CHOICE_TONE: Record<Choice, { soft: string; ink: string; solid: string; border: string; fill: string }> = {
+  pour: { soft: 'bg-poursoft', ink: 'text-pourink', solid: 'bg-pour text-onpour', border: 'border-pour', fill: 'bg-pour' },
+  contre: { soft: 'bg-contresoft', ink: 'text-contreink', solid: 'bg-contre text-oncontre', border: 'border-contre', fill: 'bg-contre' },
+  blanc: { soft: 'bg-blancsoft', ink: 'text-blancink', solid: 'bg-blanc text-onblanc ring-1 ring-inset ring-blancedge', border: 'border-blancedge', fill: 'bg-blanc ring-1 ring-inset ring-blancedge' },
+}
 
 /** Répartition POUR / CONTRE / BLANC, lisible sans la couleur (libellé, pourcentage et nombre). */
 export function VoteBars({ tally, compact }: { tally: Tally; compact?: boolean }) {
@@ -111,7 +119,7 @@ export function VoteBars({ tally, compact }: { tally: Tally; compact?: boolean }
         <div key={c} className="grid grid-cols-[4.2rem_1fr_auto] items-center gap-2 text-sm">
           <dt className="font-semibold text-ink">{CHOICE_LABEL[c]}</dt>
           <div className="h-2.5 overflow-hidden rounded-full bg-surface2" aria-hidden="true">
-            <div className={cx('h-full rounded-full', BAR[c])} style={{ width: `${pct[c]}%` }} />
+            <div className={cx('h-full rounded-full', CHOICE_TONE[c].fill)} style={{ width: `${pct[c]}%` }} />
           </div>
           <dd className="num text-right text-ink2">
             <span className="font-semibold text-ink">{pct[c]} %</span>

@@ -170,6 +170,7 @@ export const upcomingDossiers = ['Éducation', 'Environnement', 'Économie']
 export const consultations: Consultation[] = [
   {
     id: 'ric',
+    themes: ['democratie', 'institutions'],
     title: "Référendum d'initiative citoyenne",
     question: "Faut-il permettre aux citoyens de déclencher eux-mêmes un référendum national ?",
     context:
@@ -191,6 +192,7 @@ export const consultations: Consultation[] = [
   },
   {
     id: 'assemblee-tiree-au-sort',
+    themes: ['democratie', 'institutions'],
     title: 'Assemblée citoyenne permanente',
     question: 'Faut-il créer une assemblée citoyenne permanente, composée de personnes tirées au sort ?',
     context:
@@ -212,6 +214,7 @@ export const consultations: Consultation[] = [
   },
   {
     id: 'vote-blanc-6r',
+    themes: ['institutions', 'democratie'],
     title: 'Reconnaissance du vote blanc',
     question: 'Modèle 6EME REPUBLIC : le vote blanc doit-il pouvoir imposer la reformulation d’une question ?',
     context:
@@ -231,6 +234,7 @@ export const consultations: Consultation[] = [
   },
   {
     id: 'participation-16-ans',
+    themes: ['education', 'territoires', 'democratie'],
     title: 'Participation dès 16 ans',
     question: 'Faut-il ouvrir les consultations locales aux jeunes dès 16 ans ?',
     context: "Certaines démarches, comme les pétitions adressées au CESE, sont déjà ouvertes dès 16 ans. Cette consultation porte sur l'extension de ce principe aux consultations locales.",
@@ -242,6 +246,48 @@ export const consultations: Consultation[] = [
     argsAgainst: [{ title: 'Cohérence', text: 'L’âge de la majorité civile et électorale reste fixé à 18 ans.' }],
     seed: { pour: 0, contre: 0, blanc: 0 },
     seedDaily: [],
+  },
+  {
+    id: 'budgets-participatifs',
+    themes: ['territoires', 'economie'],
+    title: 'Budgets participatifs',
+    question: 'Faut-il que chaque commune réserve une part de son budget à des projets choisis par les habitants ?',
+    context:
+      "Dans un budget participatif, les habitants proposent des projets puis votent pour ceux que la commune financera. Certaines communes en organisent déjà, de leur propre initiative. Cette consultation porte sur l'idée d'en faire une règle générale.",
+    opensAt: at(-6),
+    closesAt: at(8),
+    rule: 'standard',
+    argsFor: [
+      { title: 'Projets concrets', text: 'Les habitants voient le résultat de leur participation dans leur quartier.' },
+      { title: 'Apprentissage', text: 'Choisir entre des projets fait découvrir les contraintes d’un budget public.' },
+    ],
+    argsAgainst: [
+      { title: 'Liberté des communes', text: 'Une obligation nationale réduit la marge de décision des élus locaux.' },
+      { title: 'Participation inégale', text: 'Les habitants qui ont du temps et l’habitude de ces démarches risquent de peser davantage.' },
+    ],
+    seed: { pour: 204, contre: 187, blanc: 52 },
+    seedDaily: [61, 88, 74, 79, 70, 71],
+  },
+  {
+    id: 'debat-au-college',
+    themes: ['education'],
+    title: 'Apprendre à débattre',
+    question: 'Faut-il enseigner le débat contradictoire à tous les élèves dès le collège ?',
+    context:
+      "Cette consultation porte sur l'idée d'un apprentissage régulier du débat : préparer des arguments, écouter ceux des autres, défendre parfois une position qui n'est pas la sienne.",
+    opensAt: at(-2),
+    closesAt: at(19),
+    rule: 'standard',
+    argsFor: [
+      { title: 'Compétence utile', text: 'Savoir argumenter et écouter sert dans la vie citoyenne comme dans la vie professionnelle.' },
+      { title: 'Désaccord apaisé', text: 'S’exercer tôt peut aider à discuter sans s’affronter.' },
+    ],
+    argsAgainst: [
+      { title: 'Programmes chargés', text: 'Ajouter un enseignement suppose d’en réduire un autre ou d’allonger les journées.' },
+      { title: 'Formation des enseignants', text: 'Encadrer un débat demande une préparation que tous les enseignants n’ont pas reçue.' },
+    ],
+    seed: { pour: 96, contre: 71, blanc: 23 },
+    seedDaily: [84, 106],
   },
 ]
 
