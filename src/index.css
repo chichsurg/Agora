@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* Mise en page : colonne de lecture mobile d'abord, barre d'onglets basse ;
+   rail latéral à partir de 1024px. Toutes les couleurs passent par ces jetons. */
+:root {
+  --bg: #f6f4ef;          /* ivoire Institutions */
+  --surface: #ffffff;
+  --surface2: #efecf8;
+  --ink: #0f1b3d;         /* bleu République */
+  --ink2: #414b6d;
+  --ink3: #5f6787;
+  --line: #e1dde9;
+  --accent: #6246ea;      /* indigo Agora (fonds de boutons) */
+  --accent-ink: #5237d6;  /* indigo lisible en texte */
+  --soft: #e9e6ff;        /* lavande Dialogue */
+  --lav: #a78bfa;
+  --sand: #cdb9a3;
+  --night: #0f1b3d;
+  --pour: #6246ea;
+  --contre: #0f1b3d;
+  --blanc: #cdb9a3;
+  --alert: #b3261e;
+  --alert-soft: #fbeceb;
+  --shadow: 0 1px 2px rgb(15 27 61 / 0.05), 0 8px 24px -12px rgb(15 27 61 / 0.14);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a1230; --surface: #121c42; --surface2: #1a2553; --ink: #f3f1fa; --ink2: #c3c7e0;
+    --ink3: #979dc0; --line: #28335f; --accent: #6246ea; --accent-ink: #b7a8fd; --soft: #25215f;
+    --lav: #a78bfa; --sand: #cdb9a3; --night: #060c24; --pour: #9480f8; --contre: #f3f1fa;
+    --blanc: #cdb9a3; --alert: #ffb4ab; --alert-soft: #3d1614;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a1230; --surface: #121c42; --surface2: #1a2553; --ink: #f3f1fa; --ink2: #c3c7e0;
+  --ink3: #979dc0; --line: #28335f; --accent: #6246ea; --accent-ink: #b7a8fd; --soft: #25215f;
+  --lav: #a78bfa; --sand: #cdb9a3; --night: #060c24; --pour: #9480f8; --contre: #f3f1fa;
+  --blanc: #cdb9a3; --alert: #ffb4ab; --alert-soft: #3d1614;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink2);
+  --color-ink3: var(--ink3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accentink: var(--accent-ink);
+  --color-soft: var(--soft);
+  --color-lav: var(--lav);
+  --color-sand: var(--sand);
+  --color-night: var(--night);
+  --color-pour: var(--pour);
+  --color-contre: var(--contre);
+  --color-blanc: var(--blanc);
+  --color-alert: var(--alert);
+  --color-alertsoft: var(--alert-soft);
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --shadow-card: var(--shadow);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+/* Bande sous la barre d'état du téléphone, derrière l'en-tête collant. */
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 40; background: var(--bg);
+}
+h1, h2, h3 { text-wrap: balance; }
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+:focus-visible { outline: 3px solid var(--lav); outline-offset: 2px; border-radius: 6px; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
+.num { font-variant-numeric: tabular-nums; }
+@keyframes rise { from { opacity: 0.4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.28s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "AGORA — prototype",
+  "short_name": "AGORA",
+  "description": "La place publique, réinventée. Prototype de démonstration.",
+  "lang": "fr",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F6F4EF",
+  "theme_color": "#0F1B3D",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
