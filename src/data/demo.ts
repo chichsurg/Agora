@@ -103,10 +103,67 @@ export const dossiers: Dossier[] = [
       { id: 'cndp', title: 'Missions et histoire de la CNDP', publisher: 'Commission nationale du débat public', url: 'https://www.debatpublic.fr' },
     ],
   },
+  {
+    id: 'vote-blanc',
+    title: 'Le vote blanc',
+    theme: 'Institutions',
+    summary:
+      "Voter blanc, c'est se déplacer sans choisir aucun candidat ni aucune réponse. Ce vote est décompté à part depuis 2014, mais il ne pèse pas sur le résultat. Faut-il aller plus loin ?",
+    editorial: 'brouillon-ia',
+    updatedAt: at(0),
+    facts: [
+      {
+        text: "La loi du 21 février 2014 « visant à reconnaître le vote blanc aux élections » a modifié l'article L. 65 du code électoral : les bulletins blancs sont décomptés séparément des bulletins nuls et annexés au procès-verbal.",
+        sourceIds: ['loi-2014'],
+      },
+      {
+        text: "Selon cette même loi, les bulletins blancs n'entrent pas en compte pour la détermination des suffrages exprimés. Ils ne modifient donc ni les pourcentages obtenus par les candidats ni le calcul de la majorité.",
+        sourceIds: ['loi-2014'],
+      },
+      {
+        text: "Une enveloppe ne contenant aucun bulletin est assimilée à un vote blanc. Avant 2014, elle était classée parmi les votes nuls.",
+        sourceIds: ['loi-2014', 'an-rapport'],
+      },
+      {
+        text: "Au second tour de l'élection présidentielle de 2017, plus de 3 millions de bulletins blancs ont été décomptés, soit environ 8,5 % des votants.",
+        sourceIds: ['resultats-2017'],
+      },
+      {
+        text: "Plusieurs propositions de loi visant à compter les votes blancs parmi les suffrages exprimés ont été déposées au Parlement. À la date de rédaction de ce dossier, nous n'avons trouvé aucune trace de l'adoption de l'une d'elles ; ce point reste à confirmer lors de la relecture.",
+        sourceIds: ['an-rapport'],
+      },
+    ],
+    issues: [
+      { title: 'Que signifie un vote blanc ?', text: "Il peut exprimer un refus de l'offre proposée, une hésitation ou une protestation. Le bulletin lui-même ne permet pas de distinguer ces intentions." },
+      { title: 'Blanc, nul, abstention', text: "Le vote blanc est un acte de participation. Le vote nul correspond à un bulletin irrégulier. L'abstention consiste à ne pas voter. Les trois sont comptés séparément." },
+      { title: 'Quel effet sur le résultat ?', text: "Compter les blancs parmi les suffrages exprimés changerait le calcul de la majorité. Il faudrait alors décider ce qui se passe si aucune option n'atteint le seuil requis." },
+    ],
+    viewpoints: [
+      { title: 'Le compter comme un suffrage exprimé', text: "Selon cette approche, un électeur qui se déplace pour dire qu'aucune option ne lui convient exprime bien un choix, qui devrait peser dans le résultat." },
+      { title: 'Conserver le décompte séparé', text: "Selon cette approche, une élection sert à désigner quelqu'un ou à trancher une question. Le décompte séparé informe sans empêcher la décision." },
+      { title: 'Lui donner un effet au-delà d’un seuil', text: "Selon cette approche, le vote blanc ne devrait avoir de conséquence, par exemple un nouveau scrutin ou une question reformulée, que s'il dépasse un niveau fixé à l'avance." },
+    ],
+    argsFor: [
+      { title: 'Reconnaissance', text: 'Donner un effet au vote blanc reconnaîtrait la démarche de ceux qui participent sans adhérer à aucune option.' },
+      { title: 'Participation', text: "Certains abstentionnistes pourraient revenir voter s'ils savaient que leur refus est pris en compte." },
+      { title: 'Signal aux candidats', text: "Un niveau élevé de votes blancs, visible dans le résultat, inciterait à revoir l'offre politique ou la question posée." },
+    ],
+    argsAgainst: [
+      { title: 'Risque de blocage', text: "Si les blancs comptent, une élection pourrait ne désigner personne, et il faudrait la recommencer sans garantie d'un autre résultat." },
+      { title: 'Légitimité de l’élu', text: "Un candidat élu avec moins de la moitié des suffrages, blancs compris, pourrait voir sa légitimité contestée." },
+      { title: 'Message ambigu', text: "Le vote blanc agrège des motivations très différentes. Lui attribuer un sens unique serait une interprétation." },
+    ],
+    expertAnalyses: [],
+    sources: [
+      { id: 'loi-2014', title: 'Loi n° 2014-172 du 21 février 2014 visant à reconnaître le vote blanc aux élections', publisher: 'Légifrance', url: 'https://www.legifrance.gouv.fr' },
+      { id: 'an-rapport', title: 'Rapport de la commission des lois n° 1291 (16e législature)', publisher: 'Assemblée nationale', url: 'https://www.assemblee-nationale.fr/dyn/16/rapports/cion_lois/l16b1291_rapport-fond.pdf' },
+      { id: 'resultats-2017', title: "Résultats définitifs du second tour de l'élection présidentielle 2017", publisher: 'Gouvernement (info.gouv.fr)', url: 'https://www.info.gouv.fr/resultats-definitifs-du-second-tour-de-l-election-presidentielle-2017-etablis-par-le-conseil' },
+    ],
+  },
 ]
 
 /** Thèmes annoncés, sans contenu pour l'instant. */
-export const upcomingDossiers = ['Institutions', 'Éducation', 'Environnement', 'Économie']
+export const upcomingDossiers = ['Éducation', 'Environnement', 'Économie']
 
 export const consultations: Consultation[] = [
   {
@@ -157,6 +214,7 @@ export const consultations: Consultation[] = [
     question: 'Modèle 6EME REPUBLIC : le vote blanc doit-il pouvoir imposer la reformulation d’une question ?',
     context:
       "Cette consultation porte sur une règle proposée par le laboratoire 6EME REPUBLIC. Elle applique elle-même cette règle à titre d'étude : si le vote blanc arrive en tête, la question est considérée comme à reformuler.",
+    dossierId: 'vote-blanc',
     opensAt: at(-40),
     closesAt: at(-10),
     rule: 'reformulation-si-blanc',

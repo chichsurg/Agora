@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { BookOpen, CircleUserRound, Home as HomeIcon, Lightbulb, Menu, MessagesSquare, PieChart, ScrollText, ShieldCheck, Vote } from 'lucide-react'
+import { BookOpen, CircleUserRound, Home as HomeIcon, Lightbulb, Menu, MessagesSquare, PieChart, ScrollText, Search, ShieldCheck, Vote } from 'lucide-react'
 import { href, useRoute, type Route } from './router'
 import { useStore } from './store'
 import { Arch, cx, NotFound, PageHeader, Wordmark } from '../ui/kit'
@@ -12,6 +12,7 @@ import { Resultats } from '../features/Resultats'
 import { Profil } from '../features/Profil'
 import { Admin } from '../features/Admin'
 import { Regles } from '../features/Regles'
+import { Recherche } from '../features/Recherche'
 
 type Tab = 'accueil' | 'dossiers' | 'consultations' | 'debats' | 'plus'
 
@@ -23,6 +24,7 @@ const TABS = [
 ] as const
 
 export const MORE = [
+  { label: 'Recherche', hint: 'Dossiers, consultations, débats, propositions', icon: Search, to: href('recherche') },
   { label: 'Propositions citoyennes', hint: 'Lire, soutenir, proposer', icon: Lightbulb, to: href('propositions') },
   { label: 'Résultats', hint: 'Chiffres, méthode et limites', icon: PieChart, to: href('resultats') },
   { label: 'Règles et transparence', hint: 'Comptage, modération, données', icon: ScrollText, to: href('regles') },
@@ -78,6 +80,7 @@ function screen(r: Route): ReactNode {
     case 'admin': return <Admin />
     case 'regles': return <Regles />
     case 'plus': return <Plus />
+    case 'recherche': return <Recherche />
     default: return <NotFound />
   }
 }
@@ -143,6 +146,9 @@ export function App() {
         </a>
         <div className="flex items-center gap-1">
           <a href={href('regles')} className="rounded-full bg-sand/40 px-2.5 py-1 text-xs font-semibold text-ink">Prototype</a>
+          <a href={href('recherche')} aria-label="Rechercher" className="grid size-11 place-items-center rounded-full text-ink2 hover:bg-surface2">
+            <Search size={22} aria-hidden="true" />
+          </a>
           <a href={href('profil')} aria-label="Profil" className="grid size-11 place-items-center rounded-full text-ink2 hover:bg-surface2">
             <CircleUserRound size={24} aria-hidden="true" />
           </a>

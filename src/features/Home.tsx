@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Lightbulb, MessagesSquare, PieChart, Vote } from 'lucide-react'
+import { ArrowRight, BookOpen, Lightbulb, MessagesSquare, PieChart, Search, Vote } from 'lucide-react'
 import { href } from '../app/router'
 import { allArguments, allProposals, useStore } from '../app/store'
 import { consultations, debates, dossiers } from '../data/demo'
@@ -53,6 +53,10 @@ export function Home() {
         </span>
       </section>
 
+      <a href={href('recherche')} className="flex min-h-12 items-center gap-2.5 rounded-xl border border-line bg-surface px-3.5 text-ink3 hover:bg-surface2">
+        <Search size={18} aria-hidden="true" /> Rechercher un sujet, une idée…
+      </a>
+
       <nav aria-label="Accès rapide">
         <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
           {QUICK.map((q) => (
@@ -86,7 +90,7 @@ export function Home() {
         </Section>
       )}
 
-      <Section id="h-dossier" title="Dossier à la une" action={more(href('dossiers'), 'Tous les dossiers')}>
+      <Section id="h-dossier" title="Dossier à la une" action={more(href('dossiers'), `Les ${dossiers.length} dossiers`)}>
         <a href={href('dossier', dossier.id)} className="group grid overflow-hidden rounded-2xl border border-line bg-surface shadow-card sm:grid-cols-[11rem_1fr]">
           <div className="relative h-28 overflow-hidden bg-soft sm:h-full">
             <Arch className="absolute -bottom-6 left-6 h-32 w-32" />

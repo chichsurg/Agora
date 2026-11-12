@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { cumulative, daysLeft, outcome, percentages, phase, total, withVote } from './tally'
 import { nextStatus, safeUrl, validateArgument, validateProposal } from './proposals'
 import { parseRoute } from '../app/router'
+import { normalize, search } from './search'
+import { dossiers } from '../data/demo'
 
 describe('comptage des votes', () => {
   it("ajoute le vote du navigateur sans modifier les données d'origine", () => {
@@ -108,5 +110,47 @@ describe('routage', () => {
     expect(parseRoute('#nimporte')).toEqual({ name: 'introuvable' })
     expect(parseRoute('#dossier-')).toEqual({ name: 'introuvable' })
     expect(parseRoute('#dossier-<script>')).toEqual({ name: 'introuvable' })
+  })
+})
+
+describe('recherche', () => {
+  const items = [
+    { kind: 'dossier' as const, id: 'a', title: 'La participation citoyenne', body: 'Référendum, tirage au sort, pétitions' },
+    { kind: 'debat' as const, id: 'b', title: 'Le référendum en question', body: 'Un débat' },
+    { kind: 'proposition' as const, id: 'c', title: 'Budget communal', body: 'Rien à voir' },
+  ]
+  it('ignore les accents, la casse et la ponctuation', () => {
+    expect(normalize('  Référendum d’initiative ! ')).toBe('referendum d initiative')
+    expect(search('REFERENDUM', items).map((x) => x.id)).toEqual(['b', 'a'])
+  })
+  it('exige tous les mots et place les titres en premier', () => {
+    expect(search('tirage sort', items).map((x) => x.id)).toEqual(['a'])
+    expect(search('référendum budget', items)).toEqual([])
+  })
+  it('ne renvoie rien pour une requête vide ou trop courte', () => {
+    expect(search('', items)).toEqual([])
+    expect(search(' a ', items)).toEqual([])
+  })
+})
+
+describe('intégrité éditoriale des dossiers', () => {
+  it('chaque fait cite au moins une source existante', () => {
+    for (const d of dossiers) {
+      const ids = new Set(d.sources.map((s) => s.id))
+      for (const f of d.facts) {
+        expect(f.sourceIds.length).toBeGreaterThan(0)
+        for (const id of f.sourceIds) expect(ids.has(id), `${d.id}: source ${id}`).toBe(true)
+      }
+    }
+  })
+  it('présente des arguments des deux côtés et plusieurs points de vue', () => {
+    for (const d of dossiers) {
+      expect(d.argsFor.length).toBeGreaterThan(0)
+      expect(d.argsAgainst.length).toBeGreaterThan(0)
+      expect(d.viewpoints.length).toBeGreaterThan(1)
+    }
+  })
+  it('ne publie aucune source hors http(s)', () => {
+    for (const d of dossiers) for (const s of d.sources) expect(s.url).toMatch(/^https:\/\//)
   })
 })

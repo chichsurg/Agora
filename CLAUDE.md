@@ -43,6 +43,7 @@ Principe : nous n'avons pas besoin d'être d'accord pour réfléchir ensemble.
   - `src/app/` routeur par ancre (`#nom` ou `#nom-id`), store, coquille ;
   - `src/ui/kit.tsx` composants communs ; `src/features/` un fichier par espace ;
   - `src/services/ai.ts` point d'extension IA, désactivé.
+  - `src/domain/search.ts` recherche locale (sans accents, tous les mots requis, pas de classement par popularité).
 - Couleurs : uniquement via les jetons de `src/index.css` (clair + sombre). Polices : Plus Jakarta Sans
   (interface), Fraunces (titres éditoriaux).
 - Accessibilité : cibles tactiles ≥ 44 px, focus visible, libellés, contrastes AA, `prefers-reduced-motion`.
@@ -57,7 +58,7 @@ Principe : nous n'avons pas besoin d'être d'accord pour réfléchir ensemble.
 ## Aperçu sur iPhone
 
 Après `npm run build:artifact`, publie `dist-artifact/agora.html` avec l'outil Artifact,
-toujours depuis ce même chemin, pour conserver la même adresse. Contraintes de l'aperçu : ancres simples
+en passant `url: https://claude.ai/artifact/ThUPtNLZxVb9vxV4swFLbu` pour conserver la même adresse. Contraintes de l'aperçu : ancres simples
 uniquement, pas de `confirm()`/`alert()`, pas de téléchargement, pas de service worker.
 
 ## Skills du projet
@@ -69,3 +70,9 @@ uniquement, pas de `confirm()`/`alert()`, pas de téléchargement, pas de servic
 Dépôt public `chichsurg/Agora`. Chaque push sur `main` lance les tests puis publie sur GitHub Pages
 (`.github/workflows/pages.yml`) : https://chichsurg.github.io/Agora/
 Le dépôt est public : n'y place jamais de secret ni de donnée personnelle.
+
+## Sources et réseau
+
+L'environnement cloud ne peut pas ouvrir les sites officiels français (réseau filtré) : recouper les faits
+par recherche web, et laisser le dossier en `brouillon-ia` tant qu'un humain n'a pas relu.
+Les tests vérifient que chaque fait cite une source existante et que chaque dossier présente les deux côtés.

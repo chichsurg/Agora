@@ -3,7 +3,7 @@ import { useSyncExternalStore } from 'react'
 // Routage par ancre simple (#nom ou #nom-identifiant) : fonctionne en PWA,
 // sur un hébergement statique et dans un aperçu Artifact.
 
-const STATIC = ['accueil', 'dossiers', 'consultations', 'debats', 'propositions', 'proposer', 'resultats', 'profil', 'admin', 'regles', 'plus'] as const
+const STATIC = ['accueil', 'dossiers', 'consultations', 'debats', 'propositions', 'proposer', 'resultats', 'profil', 'admin', 'regles', 'plus', 'recherche'] as const
 const WITH_ID = ['dossier', 'consultation', 'debat', 'proposition'] as const
 
 export type StaticName = (typeof STATIC)[number]
